@@ -10,4 +10,4 @@ to dynamically call tools and answer questions over expense data.
 - Automatic tool calling
 
 ## 🎥 Demo Video
-▶️ [Watch the demo](./Streamlit.mp4)
+https://github.com/yash55266/mcp-expense-assistant/issues/1#issue-3879344299
