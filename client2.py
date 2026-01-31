@@ -10,9 +10,7 @@ from langchain_openai import ChatOpenAI
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from langchain_core.messages import HumanMessage, AIMessage, ToolMessage, SystemMessage
 
-# ─────────────────────────────
-# MCP server config (UNCHANGED LOGIC)
-# ─────────────────────────────
+
 SERVERS = {
     "Summarize": {
         "transport": "stdio",
@@ -31,9 +29,6 @@ SYSTEM_PROMPT = (
     "After tools run, return only a concise final answer."
 )
 
-# ─────────────────────────────
-# Page + global styling (UI ONLY)
-# ─────────────────────────────
 st.set_page_config(
     page_title="Expense MCP Assistant",
     page_icon="💬",
@@ -61,9 +56,6 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# ─────────────────────────────
-# Sidebar (UI personality)
-# ─────────────────────────────
 with st.sidebar:
     st.markdown("## ⚙️ MCP Assistant")
     st.markdown("Interact with your **expense summarizer** using natural language.")
@@ -77,9 +69,7 @@ with st.sidebar:
     st.divider()
     st.caption("Built with Streamlit · LangChain · MCP")
 
-# ─────────────────────────────
-# Header
-# ─────────────────────────────
+
 st.markdown('<div class="app-title">💬 Expense MCP Chat</div>', unsafe_allow_html=True)
 st.markdown(
     '<div class="app-subtitle">Ask questions about your expenses. Tools run silently.</div>',
@@ -88,9 +78,6 @@ st.markdown(
 
 load_dotenv()
 
-# ─────────────────────────────
-# One-time init (LOGIC UNCHANGED)
-# ─────────────────────────────
 if "initialized" not in st.session_state:
     st.session_state.llm = ChatOpenAI(model="gpt-5")
 
@@ -104,9 +91,6 @@ if "initialized" not in st.session_state:
     st.session_state.history = [SystemMessage(content=SYSTEM_PROMPT)]
     st.session_state.initialized = True
 
-# ─────────────────────────────
-# Chat history rendering (UI tweaks only)
-# ─────────────────────────────
 for msg in st.session_state.history:
     if isinstance(msg, HumanMessage):
         with st.chat_message("user", avatar="🧑"):
@@ -117,9 +101,6 @@ for msg in st.session_state.history:
         with st.chat_message("assistant", avatar="🤖"):
             st.markdown(msg.content)
 
-# ─────────────────────────────
-# Chat input
-# ─────────────────────────────
 st.markdown('<div class="chat-hint">Tip: Ask high-level questions like summaries or totals.</div>', unsafe_allow_html=True)
 
 user_text = st.chat_input("Ask about your expenses…")
@@ -130,7 +111,6 @@ if user_text:
 
     st.session_state.history.append(HumanMessage(content=user_text))
 
-    # First LLM pass (LOGIC UNCHANGED)
     first = asyncio.run(
         st.session_state.llm_with_tools.ainvoke(st.session_state.history)
     )
@@ -141,10 +121,8 @@ if user_text:
             st.markdown(first.content or "")
         st.session_state.history.append(first)
     else:
-        # 1) append assistant tool-call message
         st.session_state.history.append(first)
 
-        # 2) execute tools
         tool_msgs = []
         for tc in tool_calls:
             name = tc["name"]
@@ -162,7 +140,6 @@ if user_text:
 
         st.session_state.history.extend(tool_msgs)
 
-        # 3) final response
         final = asyncio.run(st.session_state.llm.ainvoke(st.session_state.history))
         with st.chat_message("assistant", avatar="🤖"):
             st.markdown(final.content or "")
