@@ -8,3 +8,6 @@ to dynamically call tools and answer questions over expense data.
 - MCP tool integration
 - Streamlit chat UI
 - Automatic tool calling
+
+## 🎥 Demo Video
+▶️ [Watch the demo](./Streamlit.mp4)
